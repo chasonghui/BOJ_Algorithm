@@ -4,7 +4,7 @@ import java.util.PriorityQueue;
 import java.util.Scanner;
 
 /*
-백준 : 1916
+백준 : 1916 : 최소비용 구하기
  */
 // Node클래스 맨들기
 class Node implements Comparable<Node>{
@@ -67,8 +67,8 @@ class BOJ_1916{
             Node curNode = pq.poll();
             int cur = curNode.vertex;
 
-            //최단거리일때 종료조건 하나 추가햇
-            if(curNode.vertex == 5) return curNode.weight;
+            //최단거리일때 종료조건 하나 추가해주기
+            if(curNode.vertex == end) return curNode.weight;
             
             if (!check[cur]) {
                 check[cur] = true;

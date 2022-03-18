@@ -3,84 +3,76 @@ import java.util.Arrays;
 import java.util.PriorityQueue;
 import java.util.Scanner;
 
-/*
-2022.03.17
-백준 : 1753 최단경로
- */
-class Node implements Comparable<Node>{
-    int end, weight;
+class BOJ_1753 {
+    static ArrayList<Node>[] adj;
+    private static int v;
+    private static int e;
+    private static int start;
+    private static int[] distance;
+    private static int INF = Integer.MAX_VALUE;
 
-    public Node(int end, int weight){
-        this.end = end;
-        this.weight = weight;
-    }
-
-    @Override
-    public int compareTo(Node o) {
-        return this.weight - o.weight;
-    }
-}
-public class BOJ_1753 {
-    static int V;//정점의 개수
-    static int E;//간선의 개수
-    static int K;//시작 정점
-    static int dist[];//가중치 저장
-    static ArrayList<ArrayList<Node>> adj;
-    static final int infi=Integer.MAX_VALUE;
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        V = sc.nextInt();
-        E = sc.nextInt();
-        K = sc.nextInt();
-
-        //정점크기 만큼 인접리스트 생성
-        adj = new ArrayList<>();
-        for (int i = 0; i < V+1; i++) {
-            adj.add(new ArrayList<>());
+        v = sc.nextInt(); //정점개수
+        e = sc.nextInt(); //간선개수
+        start = sc.nextInt(); //시작정점
+        adj = new ArrayList[v + 1]; //정점 인접리스트
+        distance = new int[v + 1]; //시작점과 다른 정점간의 최단경로
+        for (int i = 1; i <= v; i++) {
+            adj[i] = new ArrayList<>();
         }
-
-        //가중치 배열 무한대로 초기화
-        dist = new int[V+1];
-        Arrays.fill(dist,infi);
-
-        //간선의 개수 만큼
-        for (int i = 0; i < E; i++) {
-            int a = sc.nextInt();
-            int b = sc.nextInt();
-            int c = sc.nextInt();
-            //단방향으로 생성
-            adj.get(a).add(new Node(b,c));
+        //초기화
+        Arrays.fill(distance, INF);
+        distance[start] = 0;
+        for (int i = 0; i < e; i++) {
+            int u = sc.nextInt(); //출발
+            int v = sc.nextInt(); //도착지
+            int w = sc.nextInt(); //가중치
+            adj[u].add(new Node(v, w));
         }
-
-        //시작 정점을 넣어줌
-        dijkstra(K);
-
-        for (int i = 1; i < V+1; i++) {
-            if(dist[i]==infi) System.out.print("INF");
-            else System.out.println(dist[i]);
+        dijkstra();
+        for (int i = 1; i <= v; i++) {
+            if (distance[i] == INF) {
+                System.out.println("INF");
+            } else {
+                System.out.println(distance[i]);
+            }
         }
     }
 
-    public static void dijkstra(int start){
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        boolean[] check = new boolean[V+1];//정점크기맨큼
-        pq.add(new Node(start,0));
-        dist[start]=0;
-
-        while(!pq.isEmpty()){
-            Node now = pq.poll();
-            if(check[now.end]==true) continue;
-            check[now.end]=true;
-
-            for(Node n : adj.get(now.end)){
-                if(dist[n.end]>=dist[now.end]+n.weight){
-                    dist[n.end]=dist[now.end]+n.weight;
-                    pq.add(new Node(n.end, dist[n.end]));
+    private static void dijkstra() {
+        PriorityQueue<Node> queue = new PriorityQueue<>();
+        queue.add(new Node(start, 0));
+        while (!queue.isEmpty()) {
+            Node node = queue.poll();
+            int vertex = node.vertex;
+            int weight = node.weight;
+            if (distance[vertex] < weight) { //지금께 더 가중치가 크면 갱신할 필요가 없다.
+                continue;
+            }
+            for (int i = 0; i < adj[vertex].size(); i++) {//해당 정점과 연결된 것들 탐색
+                int vertex2 = adj[vertex].get(i).vertex;
+                int weight2 = adj[vertex].get(i).weight + weight;
+                if (distance[vertex2] > weight2) { //지금께 더 최단경로라면 갱신해준다.
+                    distance[vertex2] = weight2;
+                    queue.add(new Node(vertex2, weight2));
                 }
             }
-
-            }
-
         }
     }
 
+    private static class Node implements Comparable<Node> { //우선순위큐로 성능개선(안하면 시간초과뜸)
+        int vertex;
+        int weight;
+
+        public Node(int vertex, int weight) {
+            this.vertex = vertex;
+            this.weight = weight;
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            return weight - o.weight;
+        }
+    }
+}

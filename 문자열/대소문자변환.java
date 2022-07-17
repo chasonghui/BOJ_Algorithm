@@ -2,7 +2,7 @@ package inflean;
 
 import java.util.Scanner;
 
-//isLowerCase, isUpperCase
+//isLowerCase(x), isUpperCase(x)
 //str.toCharArray
 public class 대소문자변환 {
 	public static String solution(String str) {
